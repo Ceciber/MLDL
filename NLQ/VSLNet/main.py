@@ -112,7 +112,6 @@ def main(configs, parser):
         for epoch in range(configs.epochs):
             model.train()
             for data in tqdm(
-                print(data)
                 train_loader,
                 total=num_train_batches,
                 desc="Epoch %3d / %3d" % (epoch + 1, configs.epochs),
@@ -127,7 +126,9 @@ def main(configs, parser):
                     s_labels,
                     e_labels,
                     # h_labels,
+                    *_  # Use a wildcard to capture any additional values
                 ) = data
+                print(data)
                 # prepare features
                 vfeats, vfeat_lens = vfeats.to(device), vfeat_lens.to(device)
                 s_labels, e_labels = (
