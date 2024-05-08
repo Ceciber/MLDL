@@ -112,6 +112,7 @@ def main(configs, parser):
         for epoch in range(configs.epochs):
             model.train()
             for data in tqdm(
+                print(data)
                 train_loader,
                 total=num_train_batches,
                 desc="Epoch %3d / %3d" % (epoch + 1, configs.epochs),
