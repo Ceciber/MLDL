@@ -130,7 +130,8 @@ class VSLNet(nn.Module):
         # h_score = self.highlight_layer(features, v_mask)
         # features = features * h_score.unsqueeze(2)
         start_logits, end_logits = self.predictor(features, mask=v_mask)
-        return h_score, start_logits, end_logits
+        # return h_score, start_logits, end_logits
+        return start_logits, end_logits
 
     def extract_index(self, start_logits, end_logits):
         return self.predictor.extract_index(
