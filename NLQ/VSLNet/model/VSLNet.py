@@ -150,7 +150,8 @@ class VSLNet(nn.Module):
         """ h_score = self.highlight_layer(features, v_mask) 
         features = features * h_score.unsqueeze(2) """
         start_logits, end_logits = self.predictor(features, mask=v_mask)
-        return """h_score,""" start_logits, end_logits
+        # return h_score, start_logits, end_logits
+        return start_logits, end_logits
         # "logits" typically refer to the raw, unnormalized prediction scores produced by a model before applying a softmax function
 
     # once we have the raw prediction scores, we pass them to the predictor that contains logic to extract the indices corresponding to start and end.
