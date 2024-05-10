@@ -5,11 +5,17 @@ import torch.nn as nn
 from transformers import AdamW, get_linear_schedule_with_warmup
 
 from model.layers import (
+    # Imports a class or function related to word or token embeddings
     Embedding,
+    # Imports something that might involve projecting visual input data into a format compatible with the neural network
     VisualProjection,
+    # Feature encoder
     FeatureEncoder,
+    # Imports a class/method related to Context query Attention
     CQAttention,
+    # Concatenate context and query information
     CQConcatenate,
+    # 
     ConditionedPredictor,
     # HighLightLayer,
     BertEmbedding,
@@ -17,6 +23,7 @@ from model.layers import (
 
 
 def build_optimizer_and_scheduler(model, configs):
+    # specify a list of parameters for which we don't want to apply weight decays because it's not desirable
     no_decay = [
         "bias",
         "layer_norm",
@@ -26,6 +33,7 @@ def build_optimizer_and_scheduler(model, configs):
         {
             "params": [
                 p
+                # for any other parameters not in the "no_decay" list we apply the weight decay
                 for n, p in model.named_parameters()
                 if not any(nd in n for nd in no_decay)
             ],
@@ -40,7 +48,9 @@ def build_optimizer_and_scheduler(model, configs):
             "weight_decay": 0.0,
         },
     ]
+    # After organizing the parameters, it initializes the optimizer.
     optimizer = AdamW(optimizer_grouped_parameters, lr=configs.init_lr)
+    #  This scheduler adjusts the learning rate during training, starting with a warm-up period where the learning rate increases linearly, followed by a linear decay
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
         configs.num_train_steps * configs.warmup_proportion,
