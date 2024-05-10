@@ -125,15 +125,15 @@ def main(configs, parser):
                     char_ids,
                     s_labels,
                     e_labels,
-                    # h_labels,
-                    *_  # Use a wildcard to capture any additional values
+                    h_labels,
                 ) = data
                 print(data)
                 # prepare features
                 vfeats, vfeat_lens = vfeats.to(device), vfeat_lens.to(device)
-                s_labels, e_labels = (
+                s_labels, e_labels, h_labels = (
                     s_labels.to(device),
                     e_labels.to(device),
+                    h_labels.to(device)
                 )
                 if configs.predictor == "bert":
                     word_ids = {key: val.to(device) for key, val in word_ids.items()}
@@ -155,18 +155,17 @@ def main(configs, parser):
                 # generate mask
                 video_mask = convert_length_to_mask(vfeat_lens).to(device)
                 # compute logits
-                start_logits, end_logits = model(
+                h_score, start_logits, end_logits = model(
                     word_ids, char_ids, vfeats, video_mask, query_mask
                 )
                 # compute loss
-                # highlight_loss = model.compute_highlight_loss(
-                    # h_score, h_labels, video_mask
-                # )
+                """ highlight_loss = model.compute_highlight_loss(
+                        h_score, h_labels, video_mask
+                ) """
                 loc_loss = model.compute_loss(
                     start_logits, end_logits, s_labels, e_labels
                 )
-                # total_loss = loc_loss + configs.highlight_lambda * highlight_loss
-                total_loss = loc_loss
+                total_loss = loc_loss """ + configs.highlight_lambda * highlight_loss """
                 # compute and apply gradients
                 optimizer.zero_grad()
                 total_loss.backward()
