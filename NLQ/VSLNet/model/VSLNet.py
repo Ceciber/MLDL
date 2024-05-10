@@ -60,14 +60,21 @@ def build_optimizer_and_scheduler(model, configs):
 
 
 class VSLNet(nn.Module):
+    # The constructor initializes the parameters of the VSLNet class. It takes two arguments: configs, which likely contains configuration parameters 
+    # for the model, and word_vectors, which may contain pre-trained word embeddings.
     def __init__(self, configs, word_vectors):
         super(VSLNet, self).__init__()
         self.configs = configs
+
+        # This initializes a VisualProjection layer, which likely projects visual features into a lower-dimensional space.
         self.video_affine = VisualProjection(
             visual_dim=configs.video_feature_dim,
             dim=configs.dim,
             drop_rate=configs.drop_rate,
         )
+
+        # This initializes a FeatureEncoder layer, which encodes features, possibly both textual and visual, using self-attention mechanisms.
+        # Paper: the encoder consists of four convolutional layers, followed by a multi-head attention layer, and a feed forward layer; normalization applied to each layer
         self.feature_encoder = FeatureEncoder(
             dim=configs.dim,
             num_heads=configs.num_heads,
@@ -125,8 +132,11 @@ class VSLNet(nn.Module):
 
         self.apply(init_weights)
 
+    
+    # Takes as argument the input data
     def forward(self, word_ids, char_ids, video_features, v_mask, q_mask):
         video_features = self.video_affine(video_features)
+        # It specifies how the input data should be processed through the layers of the model to produce the desired output.
         if self.configs.predictor == "bert":
             query_features = self.embedding_net(word_ids)
             query_features = self.query_affine(query_features)
@@ -142,7 +152,9 @@ class VSLNet(nn.Module):
         start_logits, end_logits = self.predictor(features, mask=v_mask)
         # return h_score, start_logits, end_logits
         return start_logits, end_logits
+        # "logits" typically refer to the raw, unnormalized prediction scores produced by a model before applying a softmax function
 
+    # once we have the raw prediction scores, we pass them to the predictor that contains logic to extract the indices corresponding to start and end.
     def extract_index(self, start_logits, end_logits):
         return self.predictor.extract_index(
             start_logits=start_logits, end_logits=end_logits
@@ -153,6 +165,7 @@ class VSLNet(nn.Module):
             # scores=scores, labels=labels, mask=mask
         # )
 
+    # The method delegates the computation of the prediction loss to the predictor component of the model, which contains logic for computing the cross-entropy loss based on the predicted logits and the target labels.
     def compute_loss(self, start_logits, end_logits, start_labels, end_labels):
         return self.predictor.compute_cross_entropy_loss(
             start_logits=start_logits,
