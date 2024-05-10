@@ -178,8 +178,8 @@ def main(configs, parser):
                 if writer is not None and global_step % configs.tb_log_freq == 0:
                     writer.add_scalar("Loss/Total", total_loss.detach().cpu(), global_step)
                     writer.add_scalar("Loss/Loc", loc_loss.detach().cpu(), global_step)
-                    writer.add_scalar("Loss/Highlight", highlight_loss.detach().cpu(), global_step)
-                    writer.add_scalar("Loss/Highlight (*lambda)", (configs.highlight_lambda * highlight_loss.detach().cpu()), global_step)
+                    # writer.add_scalar("Loss/Highlight", highlight_loss.detach().cpu(), global_step)
+                    # writer.add_scalar("Loss/Highlight (*lambda)", (configs.highlight_lambda * highlight_loss.detach().cpu()), global_step)
                     writer.add_scalar("LR", optimizer.param_groups[0]["lr"], global_step)
 
                 # evaluate
