@@ -127,7 +127,6 @@ def main(configs, parser):
                     e_labels,
                     h_labels,
                 ) = data
-                print(data)
                 # prepare features
                 vfeats, vfeat_lens = vfeats.to(device), vfeat_lens.to(device)
                 s_labels, e_labels, h_labels = (
